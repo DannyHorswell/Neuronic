@@ -1,0 +1,204 @@
+﻿@model CanvasTest.Models.NeuronicViewModel
+@using Newtonsoft.Json;
+
+@{
+    ViewBag.Title = "Neuronic";
+    Layout = "~/Views/Shared/_NeuronicLayout.cshtml";
+}
+
+<link href="/Content/Neuronic.css" rel="stylesheet" />
+
+<div id="highScores" class="row">
+    <div class="col-md-3">
+
+    </div>
+    <div class="col-md-6">
+
+        <h1>Neuronic</h1>
+        <h4>(The JCA brain drain game)</h4>
+
+        <h4>Instructions</h4>
+
+        <p>
+            The brain is a complex machine and must be kept healthy for you to survive.<br />
+            If neurons in the brain are not stimulated, they will die off.<br />
+            Using your mouse, stimulate your neurons with the neuron stimulation pad.<br /><br />
+
+            You must stimulate your neurons on both sides of your brain to survive.<br />
+            If one side of your brain dies, you die!<br /><br />
+
+            See how long you can live. The higher your IQ the quicker your score increases.<br />
+
+            <table>
+                <tr>
+                    <td width="200">Stimulator</td>
+                    <td><img src="~/Content/Images/stimulator.png" /></td>
+                </tr>
+                <tr>
+                    <td>Healthy neuron</td>
+                    <td><img src="~/Content/Images/healthy.png" /></td>
+                </tr>
+                <tr>
+                    <td>Unhealthy neuron</td>
+                    <td><img src="~/Content/Images/unhealthy.png" /></td>
+                </tr>
+            </table>
+        </p>
+
+        <button onclick="startGame();">Start game</button>
+
+
+
+        <hr />
+
+
+
+        <h1 style="text-align:center">High Scores</h1>
+
+        <br />
+
+        <table>
+            <tr>
+                <th class="col-md-2" style="text-align:left">Name</th>
+                <th class="col-md-2" style="text-align:center">Age</th>
+                <th class="col-md-2" style="text-align:right">Score</th>
+            </tr>
+
+            @foreach (var row in Model.HighScores)
+            {
+                <tr>
+                    <th class="col-md-2" style="text-align:left">@row.Name</th>
+                    <th class="col-md-2" style="text-align:center">@row.Age</th>
+                    <th class="col-md-2" style="text-align:right">@row.Score</th>
+                </tr>
+            }
+
+        </table>
+
+
+
+
+    </div>
+    <div class="col-md-3">
+
+    </div>
+</div>
+
+<br />
+
+
+
+
+
+
+    <div id="game" class="row">
+        <div class="col-md-12">
+            <canvas id="neuronic" width="600" height="500" style="width:100%; height:100%">
+                Your browser does not supoport the content
+            </canvas>
+        </div>
+    </div>
+
+@using (Html.BeginForm("Neuronic", "Home", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-inline", role = "form" }))
+{
+    @Html.AntiForgeryToken()
+    <div id="submitScore" >
+
+        <div class="form-horizontal">
+            <div class="row col-md-4 col-md-offset-4">
+                <h4 style="text-align:center">Submit your score</h4>
+            </div>
+
+            <div class="row col-md-4 col-md-offset-4">
+                <hr />
+           </div>
+                @Html.Hidden("Age", Model.Age)
+                @Html.Hidden("Score", Model.Score)
+                <div class="row">
+                    <div class="col-md-2 col-md-offset-4">
+                        Score:
+                    </div>
+                    <div class="col-md-4">
+                        <div id="scorediv">Something</div>
+                       </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2 col-md-offset-4">
+                        Age:
+                    </div>
+                    <div class="col-md-4">
+                        <div id="agediv">Else</div>
+                        
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2 col-md-offset-4">
+                        Name:
+                    </div>
+                    <div class="col-md-4">
+                        @Html.TextBoxFor(model => model.Name)
+                    </div>
+                </div>
+
+                <br />
+
+                <div class="row">
+                    <div class="col-md-2 col-md-offset-4">
+                        <button type="submit">Submit score</button>
+                    </div>
+                </div>
+            </div>
+     </div>
+}
+
+    <script src="~/ts/Neuronic.js"></script>
+ 
+
+        
+        @section Scripts {
+
+<script>
+
+    @Html.Raw(ViewBag.SoundJs)
+
+    function gameOver(score, age)
+    {
+        alert('Game over');
+
+        $("#highScores").hide();
+        $("#game").fadeOut();
+        $("#submitScore").fadeIn();
+
+        $('#Score').val(score);
+        $('#Age').val(age);
+
+        score = Math.round(score);
+
+        document.getElementById('scorediv').innerHTML = score;
+        document.getElementById('agediv').innerHTML = age;
+        
+
+    }
+
+    function startGame() {
+
+        // Hide the high scores
+        $("#highScores").hide();
+        $("#game").fadeIn()
+        $("#submitScore").hide();
+
+        var game = new Game(document.getElementById('neuronic'), gameOver);
+    }
+
+
+    $(document).ready(function () {
+
+            $("#highScores").show();
+            $("#game").hide();
+            $("#submitScore").hide();
+        }
+    );
+</script>
+}
+
+
